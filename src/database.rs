@@ -63,8 +63,7 @@ fn row_to_meal(x: &Row) ->MealModel{
 }
 
 pub fn insert_htwmeal(meal: HTWMainModel){
-    let mut client = Client::connect("postgresql://postgres:changeme@192.168.2.32/mensatest",
-                                     NoTls).expect("Connection failed");
+    let mut client = get_client();
 
     // Delete all old entries
     for (_, item) in meal.days.iter().enumerate(){

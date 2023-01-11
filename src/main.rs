@@ -22,6 +22,12 @@ use crate::models::MealModel;
 fn main() {
 
     // env variables
+    let postgres_user = var("POSTGRES_USER").unwrap();
+    let postgres_password = var("POSTGRES_PASSWORD").unwrap();
+    let postgres_host = var("POSTGRES_HOST").unwrap();
+    let postgres_port = var("POSTGRES_PORT").unwrap();
+    let postgres_db = var("POSTGRES_DB").unwrap();
+
     let api_url: String = var("API_URL").unwrap();
     let init_meals = var("INIT_MEALS");
 
@@ -35,8 +41,7 @@ fn main() {
         }
     }
 
-    let client = Client::connect("postgresql://postgres:changeme@192.168.2.32/mensatest",
-                                     NoTls).expect("Connection failed");
+    let client = get_client();
     thread::spawn(||{
         init_telegram_bot();
     });

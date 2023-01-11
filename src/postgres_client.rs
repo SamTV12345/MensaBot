@@ -1,8 +1,19 @@
+use std::env::var;
+use std::fmt::format;
 use postgres::{Client, NoTls};
 use teloxide::prelude::ChatId;
 
 pub fn get_client()->Client{
-    let client = Client::connect("postgresql://postgres:changeme@192.168.2.32/mensatest",
+
+    let postgres_user = var("POSTGRES_USER").unwrap();
+    let postgres_password = var("POSTGRES_PASSWORD").unwrap();
+    let postgres_host = var("POSTGRES_HOST").unwrap();
+    let postgres_port = var("POSTGRES_PORT").unwrap();
+    let postgres_db = var("POSTGRES_DB").unwrap();
+
+    let client = Client::connect(&format!("postgresql://{}:{}@{}:{}/{}",
+                                         postgres_user, postgres_password,postgres_host,
+                                          postgres_port, postgres_db),
                                      NoTls).expect("Connection failed");
     return client;
 }
