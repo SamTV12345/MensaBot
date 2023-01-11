@@ -1,6 +1,6 @@
 use std::env::var;
 use std::fmt::format;
-use postgres::{Client, NoTls};
+use postgres::{Client, Error, NoTls};
 use teloxide::prelude::ChatId;
 
 pub fn get_client()->Client{
@@ -20,7 +20,15 @@ pub fn get_client()->Client{
 
 pub fn insert_subscriber(id: ChatId) {
     let mut client = get_client();
-    client.execute("INSERT INTO telegram_subscribers (id) VALUES ($1)", &[&id.0])
-        .expect("Inserting failed. Already subscribed");
+    let res: Result<u64, Error> =client.execute("INSERT INTO telegram_subscribers (id) VALUES \
+    ($1)", &[&id.0]);
+    match res {
+        Ok(_) => {
+            log::info!("Subscriber inserted");
+        }
+        Err(e) => {
+            log::error!("Subscriber already inserted. Skipping...");
+        }
+    }
     client.close().expect("Closing connection failed");
 }
