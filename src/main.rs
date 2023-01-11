@@ -1,47 +1,125 @@
 mod models;
+mod database;
+mod postgres_client;
 
 
 use clokwerk::{Job, Scheduler, TimeUnits};
-use std::thread;
+use std::{thread};
+use std::collections::LinkedList;
 use std::time::Duration;
-use serde::Deserialize;
-use reqwest::{Error, Response};
+use reqwest::{ Response};
 use models::HTWMainModel;
-use tokio::runtime::Runtime;
-use std::env::{var_os};
-use std::ffi::OsString;
+use std::env::{var};
+use chrono::{Datelike, DateTime, TimeZone, Utc};
+use postgres::{Client, NoTls};
+use teloxide::Bot;
+use teloxide::prelude::{Message, Request, Requester};
+use crate::database::{extract_meals, insert_htwmeal, prepare_database};
+use crate::postgres_client::{get_client, insert_subscriber};
+use teloxide::types::Recipient;
+use crate::models::MealModel;
 
 fn main() {
+
     // env variables
-    const API_URL: OsString = var_os("API_URL").unwrap_or("unset".into());
+    let api_url: String = var("API_URL").unwrap();
+    let init_meals = var("INIT_MEALS");
 
-
-
-    let mut scheduler = Scheduler::new();
-
-    println!("Hello, world!");
-    scheduler.every(30.second()).run(move ||{
-        println!("Hello, world2!");
-        do_rest_call(API_URL.to_str().unwrap());
-    });
-
-
-
-    // Manually run the scheduler in an event loop
-    loop {
-        scheduler.run_pending();
-        println!("Waiting for next job");
-        thread::sleep(Duration::from_millis(1000));
+    match init_meals {
+        Ok(_) => {
+            println!("Initing meals");
+            query_and_insert_meals(&api_url);
+        }
+        Err(_) => {
+            println!("Meals will not be initialized");
+        }
     }
 
+    let client = Client::connect("postgresql://postgres:changeme@192.168.2.32/mensatest",
+                                     NoTls).expect("Connection failed");
+    thread::spawn(||{
+        init_telegram_bot();
+    });
+    prepare_database(client);
+    let mut scheduler = Scheduler::new();
 
+    scheduler.every(1.week()).plus(10.second()).run(move ||{
+        query_and_insert_meals(&api_url);
+    });
+
+    scheduler.every(1.day()).at("6:00am").plus(10.second()).run(move ||{
+        send_daily_meal();
+    });
+
+    loop {
+        scheduler.run_pending();
+        thread::sleep(Duration::from_millis(100));
+    }
+}
+
+fn query_and_insert_meals(api_url: &String) {
+    let result: HTWMainModel = do_rest_call(&api_url);
+    insert_htwmeal(result);
 }
 
 #[tokio::main]
-async fn do_rest_call(x: &str) {
-    println!("Calling api");
+async fn do_rest_call(x: &str) -> HTWMainModel {
     let response = reqwest::get(x).await.unwrap();
 
     let users:HTWMainModel = response.json().await.unwrap();
-    println!("{:?}", users);
+
+    return users;
+}
+
+
+#[tokio::main]
+async fn init_telegram_bot() {
+    let bot = Bot::from_env();
+
+    teloxide::repl(bot, |bot: Bot, msg: Message| async move {
+        println!("Received a message from {}: {}", msg.chat.id, msg.text().unwrap());
+        thread::spawn(move || {
+            insert_subscriber(msg.chat.id);
+        });
+
+        bot.send_message(msg.chat.id, "You are now subscribed to the HTW Mensa Bot").await?;
+        Ok(())
+    }).await;
+}
+
+fn send_daily_meal(){
+    let mut client = get_client();
+    if let Ok(row) = client.query("SELECT id FROM telegram_subscribers;",&[]) {
+        let id = row.get(0);
+        match id {
+            Some(id) => {
+                let chat_id:i64 = id.get(0);
+                let current_date = Utc::now();
+                let dt:DateTime<Utc> = Utc.with_ymd_and_hms(current_date.year(), current_date.month
+                (), current_date.day(), 0,0,0).unwrap();
+                let message_to_send:String = create_message(extract_meals(dt));
+                send_message(&message_to_send, &chat_id.to_string());
+            }
+            None => {
+                println!("No id found");
+            }
+        }
+    }
+}
+
+#[tokio::main]
+async fn send_message(message: &str, chat_id:&str){
+    let bot = Bot::from_env();
+    bot.send_message(Recipient::from(chat_id.to_string()), message).send()
+        .await.expect("TODO: panic message");
+}
+
+
+fn create_message(meals_of_today: LinkedList<MealModel>) ->String{
+    let mut message = String::new();
+    message.push_str("Heute gibt es folgende Gerichte: \n");
+    for i in meals_of_today {
+        message.push_str(&format!("- {} für {}€\n", &i.name, &i.studentprice));
+    }
+    return message;
 }

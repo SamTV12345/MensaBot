@@ -1,75 +1,90 @@
 use chrono::{DateTime, Utc};
 
 use serde::Deserialize;
-use std::collections::{HashSet, LinkedList};
-use std::collections::hash_map::RandomState;
+use std::collections::{LinkedList};
 
 #[derive(Deserialize, Debug)]
 pub struct MyHashSet<T> {
-    base: Vec<T>,
+    pub base: Vec<T>,
 }
 
 #[derive(Deserialize, Debug)]
-struct OpeningHours {
-    start: DateTime<Utc>,
-    end: DateTime<Utc>
+pub struct OpeningHours {
+    pub start: DateTime<Utc>,
+    pub end: DateTime<Utc>
 }
 
 #[derive(Deserialize, Debug)]
-struct Color {
-    r: u8,
-    g: u8,
-    b: u8
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8
 }
 
 #[derive(Deserialize, Debug)]
-struct PriceList{
-    s: String,
-    m: String,
-    g: String
+pub struct PriceList{
+    pub s: String,
+    pub m: String,
+    pub g: String
 }
 
 #[derive(Deserialize, Debug)]
-struct Component {
-    name:String,
-    notices: LinkedList<String>
+pub struct Component {
+    pub name:String,
+    pub notices: LinkedList<String>
 }
 
 #[derive(Deserialize, Debug)]
-struct Meal {
-    name: String,
-    notices: LinkedList<String>,
-    components: LinkedList<Component>,
-    prices: Option<PriceList>,
-    category: Option<String>
+pub struct Meal {
+    pub name: String,
+    pub notices: LinkedList<String>,
+    pub components: LinkedList<Component>,
+    pub prices: Option<PriceList>,
+    pub category: Option<String>
 }
 
 #[derive(Deserialize, Debug)]
-struct Feedback{
-    start : DateTime<Utc>,
-    end : DateTime<Utc>
+pub struct Feedback{
+    pub start : DateTime<Utc>,
+    pub end : DateTime<Utc>
 }
 
 #[derive(Deserialize, Debug)]
-struct Counter{
-    id: String,
-    displayName: String,
-    description: String,
-    openingHours: OpeningHours,
-    color: Color,
-    feedback: Feedback,
-    meals: Vec<Meal>
+#[serde(rename_all = "camelCase")]
+pub struct Counter{
+    pub id: String,
+    pub display_name: String,
+    pub description: String,
+    pub opening_hours: OpeningHours,
+    pub color: Color,
+    pub feedback: Feedback,
+    pub meals: Vec<Meal>
 }
 
 
 #[derive(Deserialize, Debug)]
 pub struct HTWMainModel {
-    days: LinkedList<days>
+    pub days: LinkedList<Days>
 }
 
 #[derive(Deserialize, Debug)]
-struct days {
-    date: DateTime<Utc>,
-    isPast: bool,
-    counters: LinkedList<Counter>
+#[serde(rename_all = "camelCase")]
+pub struct Days {
+    pub date: DateTime<Utc>,
+    pub is_past: bool,
+    pub counters: LinkedList<Counter>
+}
+
+
+/**
+    Database model
+ */
+
+pub struct MealModel {
+    pub id: i32,
+    pub calendar: DateTime<Utc>,
+    pub counterid: String,
+    pub countername: String,
+    pub name: String,
+    pub studentprice: String
 }

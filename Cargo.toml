@@ -11,3 +11,6 @@ serde = {version="1.0.152", features = ["derive"]}
 reqwest = {version="0.11.13", features = ["blocking", "json", "async-compression"]}
 chrono = {version = "0.4.23", features= ["serde"]}
 tokio = {version = "1.13.0", features = ["full"]}
+postgres = {version = "0.19.4", features = ["with-chrono-0_4"]}
+teloxide = { version = "0.11.3", features = ["macros"] }
+futures = "0.3.25"
