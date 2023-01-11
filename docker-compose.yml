@@ -1,0 +1,16 @@
+version: '3'
+services:
+  mensabot:
+    image: rust-test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - API_URL=<api-url>
+      - POSTGRES_DB=<your-db>
+      - POSTGRES_HOST=<postgres-ip>
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - RUST_BACKTRACE=full
+      - TELOXIDE_TOKEN=<your-token>
