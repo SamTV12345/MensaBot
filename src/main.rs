@@ -1,6 +1,7 @@
 mod models;
 mod database;
 mod postgres_client;
+mod logging;
 
 
 use clokwerk::{Job, Scheduler, TimeUnits};
@@ -17,27 +18,29 @@ use teloxide::prelude::{Message, Request, Requester};
 use crate::database::{extract_meals, insert_htwmeal, prepare_database};
 use crate::postgres_client::{get_client, insert_subscriber};
 use teloxide::types::Recipient;
+use crate::logging::init_logging;
 use crate::models::MealModel;
 
 fn main() {
 
     // env variables
-    let postgres_user = var("POSTGRES_USER").unwrap();
+    /*let postgres_user = var("POSTGRES_USER").unwrap();
     let postgres_password = var("POSTGRES_PASSWORD").unwrap();
     let postgres_host = var("POSTGRES_HOST").unwrap();
     let postgres_port = var("POSTGRES_PORT").unwrap();
-    let postgres_db = var("POSTGRES_DB").unwrap();
+    let postgres_db = var("POSTGRES_DB").unwrap();*/
 
     let api_url: String = var("API_URL").unwrap();
     let init_meals = var("INIT_MEALS");
 
+    init_logging();
     match init_meals {
         Ok(_) => {
-            println!("Initing meals");
+            log::info!("Initing meals");
             query_and_insert_meals(&api_url);
         }
         Err(_) => {
-            println!("Meals will not be initialized");
+           log::error!("Meals will not be initialized");
         }
     }
 
@@ -69,6 +72,7 @@ fn query_and_insert_meals(api_url: &String) {
 
 #[tokio::main]
 async fn do_rest_call(x: &str) -> HTWMainModel {
+    log::info!("Calling API");
     let response = reqwest::get(x).await.unwrap();
 
     let users:HTWMainModel = response.json().await.unwrap();
@@ -82,7 +86,7 @@ async fn init_telegram_bot() {
     let bot = Bot::from_env();
 
     teloxide::repl(bot, |bot: Bot, msg: Message| async move {
-        println!("Received a message from {}: {}", msg.chat.id, msg.text().unwrap());
+        log::info!("Received a message from {}: {}", msg.chat.id, msg.text().unwrap());
         thread::spawn(move || {
             insert_subscriber(msg.chat.id);
         });
@@ -93,6 +97,7 @@ async fn init_telegram_bot() {
 }
 
 fn send_daily_meal(){
+    log::info!("Sending daily meals.");
     let mut client = get_client();
     if let Ok(row) = client.query("SELECT id FROM telegram_subscribers;",&[]) {
         let id = row.get(0);
@@ -106,7 +111,7 @@ fn send_daily_meal(){
                 send_message(&message_to_send, &chat_id.to_string());
             }
             None => {
-                println!("No id found");
+                log::info!("No id found");
             }
         }
     }

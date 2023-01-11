@@ -5,14 +5,14 @@ use crate::models::{HTWMainModel, MealModel};
 use crate::postgres_client::get_client;
 
 pub fn prepare_database(client: Client) {
-    println!("Preparing database");
+    log::info!("Preparing database");
 
     init_meal_database(client);
     init_telegram_bot_subscribers();
 }
 
 fn init_telegram_bot_subscribers(){
-    println!("Preparing telegram bot subscribers");
+    log::info!("Preparing telegram bot subscribers");
     let mut client = get_client();
 
     client.execute("CREATE TABLE IF NOT EXISTS telegram_subscribers (
@@ -37,7 +37,7 @@ fn init_meal_database(mut client: Client){
     )";
 
     if !table_exists {
-        println!("Preparing database");
+        log::info!("Preparing database");
         client.execute("CREATE SEQUENCE IF NOT EXISTS meal_id_seq", &[]).expect("Creating sequence \
         failed");
         client.execute(QUERY, &[]).expect("Query failed");
@@ -78,7 +78,7 @@ pub fn insert_htwmeal(meal: HTWMainModel){
                 let student_price: &str;
                 match &meal.prices{
                     Some(p)=> {
-                        println!("{}", p.s);
+                        log::info!("{}", p.s);
                         student_price = &p.s;
                     },
                     None=>{
