@@ -32,3 +32,16 @@ pub fn insert_subscriber(id: ChatId) {
     }
     client.close().expect("Closing connection failed");
 }
+
+pub fn delete_subscriber(id: ChatId) {
+    let mut client = get_client();
+    let res: Result<u64, Error> =client.execute("DELETE FROM telegram_subscribers WHERE id = $1", &[&id.0]);
+    match res {
+        Ok(_) => {
+            log::info!("Subscriber deleted");
+        }
+        Err(e) => {
+            log::error!("Subscriber not found. Skipping...");
+        }
+    }
+}

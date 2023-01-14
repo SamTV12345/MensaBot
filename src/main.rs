@@ -2,6 +2,7 @@ mod models;
 mod database;
 mod postgres_client;
 mod logging;
+mod message_sender;
 
 
 use clokwerk::{Job, Scheduler, TimeUnits};
@@ -16,9 +17,10 @@ use postgres::{Client, NoTls};
 use teloxide::Bot;
 use teloxide::prelude::{Message, Request, Requester};
 use crate::database::{extract_meals, insert_htwmeal, prepare_database};
-use crate::postgres_client::{get_client, insert_subscriber};
+use crate::postgres_client::{delete_subscriber, get_client, insert_subscriber};
 use teloxide::types::Recipient;
 use crate::logging::init_logging;
+use crate::message_sender::send_telegram_reply;
 use crate::models::MealModel;
 
 fn main() {
@@ -87,11 +89,8 @@ async fn init_telegram_bot() {
 
     teloxide::repl(bot, |bot: Bot, msg: Message| async move {
         log::info!("Received a message from {}: {}", msg.chat.id, msg.text().unwrap());
-        thread::spawn(move || {
-            insert_subscriber(msg.chat.id);
-        });
 
-        bot.send_message(msg.chat.id, "You are now subscribed to the HTW Mensa Bot").await?;
+        send_telegram_reply(bot, msg.chat.id, msg).await;
         Ok(())
     }).await;
 }
@@ -104,17 +103,21 @@ fn send_daily_meal(){
         match id {
             Some(id) => {
                 let chat_id:i64 = id.get(0);
-                let current_date = Utc::now();
-                let dt:DateTime<Utc> = Utc.with_ymd_and_hms(current_date.year(), current_date.month
-                (), current_date.day(), 0,0,0).unwrap();
-                let message_to_send:String = create_message(extract_meals(dt));
-                send_message(&message_to_send, &chat_id.to_string());
+                send_meals_to_one_subscriber(&chat_id);
             }
             None => {
                 log::info!("No id found");
             }
         }
     }
+}
+
+fn send_meals_to_one_subscriber(chat_id: &i64) {
+    let current_date = Utc::now();
+    let dt: DateTime<Utc> = Utc.with_ymd_and_hms(current_date.year(), current_date.month
+    (), current_date.day(), 0, 0, 0).unwrap();
+    let message_to_send: String = create_message(extract_meals(dt));
+    send_message(&message_to_send, &chat_id.to_string());
 }
 
 #[tokio::main]

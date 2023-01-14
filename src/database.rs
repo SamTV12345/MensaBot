@@ -4,6 +4,18 @@ use postgres::{Client, NoTls, Row};
 use crate::models::{HTWMainModel, MealModel};
 use crate::postgres_client::get_client;
 
+
+static QUERY: &str = "CREATE TABLE IF NOT EXISTS public.meal(
+    id integer NOT NULL DEFAULT nextval('meal_id_seq'),
+    calendar timestamp with time zone,
+    counterid character varying(255),
+    countername character varying(255),
+    name character varying(255),
+    studentprice character varying(255),
+    CONSTRAINT meal_pkey PRIMARY KEY (id)
+    )";
+
+
 pub fn prepare_database(client: Client) {
     log::info!("Preparing database");
 
@@ -26,15 +38,7 @@ fn init_meal_database(mut client: Client){
         panic!("Error: {}", e);
     }).iter().next().unwrap().get(0);
 
-    const QUERY: &str = "CREATE TABLE IF NOT EXISTS public.meal(
-    id integer NOT NULL DEFAULT nextval('meal_id_seq'),
-    calendar timestamp with time zone,
-    counterid character varying(255),
-    countername character varying(255),
-    name character varying(255),
-    studentprice character varying(255),
-    CONSTRAINT meal_pkey PRIMARY KEY (id)
-    )";
+
 
     if !table_exists {
         log::info!("Preparing database");

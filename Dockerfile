@@ -1,17 +1,14 @@
-FROM rustlang/rust:nightly as builder
+FROM rust:alpine as builder
 
 WORKDIR /app/src
 RUN USER=root
 
+RUN apk add pkgconfig openssl-dev libc-dev
 COPY ./ ./
 RUN cargo build --release
 
-FROM debian:stable-slim
+FROM alpine:latest
 WORKDIR /app
-RUN apt update \
-    && apt install -y openssl ca-certificates \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EXPOSE 80 443
 
