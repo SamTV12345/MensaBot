@@ -3,7 +3,6 @@ use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
 
-
 pub fn init_logging(){
     Builder::new()
         .format(|buf, record| {
