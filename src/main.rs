@@ -9,15 +9,13 @@ use clokwerk::{Job, Scheduler, TimeUnits};
 use std::{thread};
 use std::collections::LinkedList;
 use std::time::Duration;
-use reqwest::{ Response};
 use models::HTWMainModel;
 use std::env::{var};
 use chrono::{Datelike, DateTime, TimeZone, Utc};
-use postgres::{Client, NoTls};
 use teloxide::Bot;
 use teloxide::prelude::{Message, Request, Requester};
 use crate::database::{extract_meals, insert_htwmeal, prepare_database};
-use crate::postgres_client::{delete_subscriber, get_client, insert_subscriber};
+use crate::postgres_client::{get_client};
 use teloxide::types::Recipient;
 use crate::logging::init_logging;
 use crate::message_sender::send_telegram_reply;
@@ -48,6 +46,7 @@ fn main() {
 
     let client = get_client();
     thread::spawn(||{
+        log::info!("Starting telegram bot");
         init_telegram_bot();
     });
     prepare_database(client);
@@ -85,6 +84,7 @@ async fn do_rest_call(x: &str) -> HTWMainModel {
 
 #[tokio::main]
 async fn init_telegram_bot() {
+    log::info!("Starting telegram bot");
     let bot = Bot::from_env();
 
     teloxide::repl(bot, |bot: Bot, msg: Message| async move {

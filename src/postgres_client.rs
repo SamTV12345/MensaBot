@@ -1,5 +1,4 @@
 use std::env::var;
-use std::fmt::format;
 use postgres::{Client, Error, NoTls};
 use teloxide::prelude::ChatId;
 
@@ -26,7 +25,7 @@ pub fn insert_subscriber(id: ChatId) {
         Ok(_) => {
             log::info!("Subscriber inserted");
         }
-        Err(e) => {
+        Err(_) => {
             log::error!("Subscriber already inserted. Skipping...");
         }
     }
@@ -40,7 +39,7 @@ pub fn delete_subscriber(id: ChatId) {
         Ok(_) => {
             log::info!("Subscriber deleted");
         }
-        Err(e) => {
+        Err(_) => {
             log::error!("Subscriber not found. Skipping...");
         }
     }

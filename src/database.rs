@@ -1,6 +1,6 @@
 use std::collections::LinkedList;
 use chrono::{DateTime, Utc};
-use postgres::{Client, NoTls, Row};
+use postgres::{Client, Row};
 use crate::models::{HTWMainModel, MealModel};
 use crate::postgres_client::get_client;
 
@@ -17,7 +17,6 @@ static QUERY: &str = "CREATE TABLE IF NOT EXISTS public.meal(
 
 static INSERT_QUERY: &str = "INSERT INTO meal (calendar, counterid, countername, name, studentprice) VALUES ($1, $2, $3, $4, $5)";
 
-static COUNTER_ID: &str = "komplett";
 
 pub fn prepare_database(client: Client) {
     log::info!("Preparing database");
@@ -93,7 +92,7 @@ pub fn insert_htwmeal(meal: HTWMainModel){
                     }
                 };
 
-                        /**Check if meal contains a component e.g. french fries*/
+                // Check if meal contains a component e.g. french fries
                         match !meal.components.front().is_none() {
                             true => {
                                 let mut meal_name_to_insert: String = meal.name.to_owned();

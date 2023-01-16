@@ -12,6 +12,7 @@ WORKDIR /app
 
 EXPOSE 80 443
 
-COPY --from=builder /app/src/target/release/HTWMensa /app/HTWMensa
+RUN apk add openssl ca-certificates
+COPY --from=builder /app/src/target/release/htwmensa /app/htwmensa
 
-CMD ["/app/HTWMensa"]
+CMD ["/app/htwmensa"]

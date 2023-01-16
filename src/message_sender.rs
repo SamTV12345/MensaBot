@@ -33,7 +33,7 @@ pub async fn send_telegram_reply(bot:Bot, chat_id: ChatId, msg: Message) {
                 .await.expect("Unscribe failed");
         }
         _ => {
-            bot.send_message(msg.chat.id, ("Unknown command")).await.expect("Error sending \
+            bot.send_message(msg.chat.id, "Unknown command").await.expect("Error sending \
             unknown command");
         }
     }

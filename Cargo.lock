@@ -3,21 +3,6 @@
 version = 3
 
 [[package]]
-name = "HTWMensa"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clokwerk",
- "env_logger",
- "log",
- "postgres",
- "reqwest",
- "serde",
- "teloxide",
- "tokio",
-]
-
-[[package]]
 name = "aho-corasick"
 version = "0.7.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -612,6 +597,21 @@ name = "httpdate"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4a1e36c821dbe04574f602848a19f742f4fb3c98d40449f11bcad18d6b17421"
+
+[[package]]
+name = "htwmensa"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clokwerk",
+ "env_logger",
+ "log",
+ "postgres",
+ "reqwest",
+ "serde",
+ "teloxide",
+ "tokio",
+]
 
 [[package]]
 name = "humantime"
