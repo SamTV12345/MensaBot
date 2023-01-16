@@ -55,9 +55,9 @@ pub struct Counter{
     pub id: String,
     pub display_name: String,
     pub description: String,
-    pub opening_hours: OpeningHours,
+    pub opening_hours: Option<OpeningHours>,
     pub color: Color,
-    pub feedback: Feedback,
+    pub feedback: Option<Feedback>,
     pub meals: Vec<Meal>
 }
 

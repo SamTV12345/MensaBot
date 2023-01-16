@@ -10,11 +10,14 @@ static QUERY: &str = "CREATE TABLE IF NOT EXISTS public.meal(
     calendar timestamp with time zone,
     counterid character varying(255),
     countername character varying(255),
-    name character varying(255),
+    name character varying(1000),
     studentprice character varying(255),
     CONSTRAINT meal_pkey PRIMARY KEY (id)
     )";
 
+static INSERT_QUERY: &str = "INSERT INTO meal (calendar, counterid, countername, name, studentprice) VALUES ($1, $2, $3, $4, $5)";
+
+static COUNTER_ID: &str = "komplett";
 
 pub fn prepare_database(client: Client) {
     log::info!("Preparing database");
@@ -90,9 +93,29 @@ pub fn insert_htwmeal(meal: HTWMainModel){
                     }
                 };
 
-                client.execute("INSERT INTO meal (calendar, counterid, countername, name, \
-                studentprice) VALUES ($1, $2, $3, $4, $5)", &[&item.date, &counter.id,
-                        &counter.display_name, &meal.name, &student_price]).expect("Insert failed");
+                        /**Check if meal contains a component e.g. french fries*/
+                        match !meal.components.front().is_none() {
+                            true => {
+                                let mut meal_name_to_insert: String = meal.name.to_owned();
+                                meal_name_to_insert.push_str(" mit ");
+                                meal.components.iter().for_each(|x| {
+                                    meal_name_to_insert.push_str(&x.name.as_str());
+                                    meal_name_to_insert.push_str(", ");
+                                });
+
+                                client.execute(INSERT_QUERY,
+                                               &[&item.date, &counter.id,&counter.display_name,
+                                                   &meal_name_to_insert,&student_price])
+                                    .expect("Inserting failed");
+                            }
+                            false=>{
+                                client.execute(INSERT_QUERY,
+                                               &[&item.date, &counter.id, &counter.display_name,
+                                                   &meal.name,
+                                                   &student_price])
+                                    .expect("Inserting failed");
+                            }
+                        }
                 }
             }
     }
