@@ -16,8 +16,9 @@ pub async fn send_telegram_reply(bot:Bot, chat_id: ChatId, msg: Message) {
                 .await.expect("Error sending message");
         }
         "/help"=>{
-            bot.send_message(chat_id,"/subscribe - Subscribe to the daily meal\n/unsubscribe - \
-            Unsubscribe from the daily meal").await.expect("Error sending subscribe message");
+            bot.send_message(chat_id,"/subscribe - Subscribe to the daily meal\
+            \n/unsubscribe - Unsubscribe from the daily meal.\
+            \n/getMeal - Get today's meal.").await.expect("Error sending subscribe message");
         }
         "/getMeal"=>{
             thread::spawn(move || {

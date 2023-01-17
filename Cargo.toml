@@ -16,6 +16,6 @@ reqwest = {version="0.11.13", features = ["blocking", "json", "async-compression
 chrono = {version = "0.4.23", features= ["serde"]}
 tokio = {version = "1.13.0", features = ["full"]}
 postgres = {version = "0.19.4", features = ["with-chrono-0_4"]}
-teloxide = { version = "0.11.3", features = ["macros", "rustls"] }
+teloxide = { version = "0.12.0", features = ["macros", "rustls"] }
 env_logger = "0.10.0"
 log = "0.4.17"
