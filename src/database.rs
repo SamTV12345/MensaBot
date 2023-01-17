@@ -44,10 +44,10 @@ fn init_meal_database(mut client: Client){
 
     if !table_exists {
         log::info!("Initializing database");
-        client.execute(QUERY, &[]).expect("Query failed");
         client.execute("CREATE SEQUENCE IF NOT EXISTS meal_id_seq;", &[]).expect("Creating \
         sequence \
         failed");
+        client.execute(QUERY, &[]).expect("Query failed");
         client.execute("ALTER SEQUENCE meal_id_seq OWNED BY public.meal.id;", &[]).expect
         ("Creating sequence failed");
     }

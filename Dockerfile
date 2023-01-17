@@ -1,18 +1,20 @@
-FROM rust:alpine as builder
+FROM talk.schwanzer.online/dockerhub_proxy/library/rust:alpine3.17 as builder
 
 WORKDIR /app/src
-RUN USER=root
 
 RUN apk add pkgconfig openssl-dev libc-dev
+
+COPY Cargo.toml .
+
 COPY ./ ./
-RUN cargo build --release
+RUN RUSTFLAGS='-C target-feature=-crt-static' cargo build --release
 
 FROM alpine:latest
 WORKDIR /app
 
-EXPOSE 80 443
+RUN apk add libgcc tzdata
+ENV TZ=Europe/Berlin
 
-RUN apk add openssl ca-certificates
 COPY --from=builder /app/src/target/release/htwmensa /app/htwmensa
 
 CMD ["/app/htwmensa"]
