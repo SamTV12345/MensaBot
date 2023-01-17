@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly-bullseye as builder
+FROM talk.schwanzer.online/dockerhub_proxy/library/rust:bullseye as builder
 
 WORKDIR /app/src
 RUN USER=root
@@ -6,7 +6,7 @@ RUN USER=root
 COPY ./ ./
 RUN cargo build --release
 
-FROM debian:stable-slim
+FROM talk.schwanzer.online/dockerhub_proxy/library/debian:stable-slim
 WORKDIR /app
 RUN apt update \
     && apt install -y openssl ca-certificates \
