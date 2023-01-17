@@ -62,7 +62,7 @@ fn main() {
 
     loop {
         scheduler.run_pending();
-        thread::sleep(Duration::from_millis(100));
+        thread::sleep(Duration::from_millis(10000));
     }
 }
 
