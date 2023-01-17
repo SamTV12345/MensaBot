@@ -13,7 +13,7 @@ static QUERY: &str = "CREATE TABLE IF NOT EXISTS public.meal(
     name character varying(1000),
     studentprice character varying(255),
     CONSTRAINT meal_pkey PRIMARY KEY (id)
-    )";
+    );";
 
 static INSERT_QUERY: &str = "INSERT INTO meal (calendar, counterid, countername, name, studentprice) VALUES ($1, $2, $3, $4, $5)";
 
@@ -45,7 +45,8 @@ fn init_meal_database(mut client: Client){
     if !table_exists {
         log::info!("Initializing database");
         client.execute(QUERY, &[]).expect("Query failed");
-        client.execute("CREATE SEQUENCE IF NOT EXISTS meal_id_seq", &[]).expect("Creating sequence \
+        client.execute("CREATE SEQUENCE IF NOT EXISTS meal_id_seq;", &[]).expect("Creating \
+        sequence \
         failed");
         client.execute("ALTER SEQUENCE meal_id_seq OWNED BY public.meal.id;", &[]).expect
         ("Creating sequence failed");
