@@ -2,11 +2,10 @@ use std::thread;
 use chrono::{Datelike, DateTime, NaiveDate, TimeZone, Utc};
 use regex::Regex;
 use teloxide::Bot;
-use teloxide::payloads::AnswerCallbackQuerySetters;
 use teloxide::prelude::{ChatId, Requester};
 use teloxide::types::Message;
 use crate::postgres_client::{delete_subscriber, insert_subscriber};
-use crate::{create_message, create_message_with_heading, send_meals_to_one_subscriber, send_message};
+use crate::{create_message_with_heading, send_meals_to_one_subscriber, send_message};
 use crate::database::extract_meals;
 
 pub async fn send_telegram_reply(bot:Bot, chat_id: ChatId, msg: Message) {

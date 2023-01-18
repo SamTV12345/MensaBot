@@ -81,7 +81,7 @@ pub struct Days {
  */
 
 pub struct MealModel {
-    pub id: i32,
+    pub id: String,
     pub calendar: DateTime<Utc>,
     pub counterid: String,
     pub countername: String,
