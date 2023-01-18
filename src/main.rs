@@ -136,3 +136,12 @@ fn create_message(meals_of_today: LinkedList<MealModel>) ->String{
     }
     return message;
 }
+
+fn create_message_with_heading(meals_of_today: LinkedList<MealModel>, heading:&str) ->String{
+    let mut message = String::new();
+    message.push_str(heading);
+    for i in meals_of_today {
+        message.push_str(&format!("- {} für {}€\n", &i.name, &i.studentprice));
+    }
+    return message;
+}

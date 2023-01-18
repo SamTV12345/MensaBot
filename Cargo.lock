@@ -613,6 +613,7 @@ dependencies = [
  "env_logger",
  "log",
  "postgres",
+ "regex",
  "reqwest",
  "serde",
  "teloxide",
