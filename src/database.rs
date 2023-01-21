@@ -1,7 +1,7 @@
 use std::collections::LinkedList;
 use chrono::{DateTime, Utc};
 use postgres::{Client, Row};
-use uuid::{uuid, Uuid};
+use uuid::{Uuid};
 use crate::models::{HTWMainModel, MealModel};
 use crate::postgres_client::get_client;
 

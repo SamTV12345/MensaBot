@@ -56,7 +56,7 @@ fn main() {
         query_and_insert_meals(&api_url);
     });
 
-    scheduler.every(1.day()).at("6:00 am").plus(10.second()).run(move ||{
+    scheduler.every(1.day()).at("06:00:00").run(move ||{
         send_daily_meal();
     });
 
