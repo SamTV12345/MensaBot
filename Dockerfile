@@ -21,7 +21,8 @@ RUN rm -rf /app/src/target/release/htwmensa*
 
 COPY Cargo.toml .
 
-COPY ./ ./
+COPY ./src ./src
+
 RUN RUSTFLAGS='-C target-feature=-crt-static' cargo build --release
 
 FROM alpine:latest
