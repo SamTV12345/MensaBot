@@ -20,4 +20,4 @@ teloxide = { version = "0.12.0", features = ["macros", "rustls"] }
 env_logger = "0.10.0"
 log = "0.4.19"
 regex = "1.8.4"
-uuid = {version = "1.3.3", features = ["v4"]}
+uuid = {version = "1.3.4", features = ["v4"]}
