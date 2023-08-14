@@ -18,6 +18,6 @@ tokio = {version = "1.29.1", features = ["full"]}
 postgres = {version = "0.19.5", features = ["with-chrono-0_4"]}
 teloxide = { version = "0.12.0", features = ["macros", "rustls"] }
 env_logger = "0.10.0"
-log = "0.4.19"
+log = "0.4.20"
 regex = "1.9.3"
 uuid = {version = "1.4.1", features = ["v4"]}
